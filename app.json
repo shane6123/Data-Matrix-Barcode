@@ -15,13 +15,22 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "allow",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      },
+      "bundleIdentifier": "com.shane6123.snack2bfc7c5163604873be0c4eb5e1c832af"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.shane6123.snack2bfc7c5163604873be0c4eb5e1c832af"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,7 +42,11 @@
           "cameraPermission": "allow"
         }
       ]
-    ]
-    
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "81c41a59-180c-423a-9581-900c91263adc"
+      }
+    }
   }
 }

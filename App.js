@@ -1,15 +1,24 @@
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera, CameraType } from 'expo-camera';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import FoundIcon from '@expo/vector-icons/Ionicons';
 
 export default function App() {
   const [scanned, setScanned] = useState(false);
   const [zoom, setZoom] = useState(0.1);
   const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
-  const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [autoFocus, toggleAutoFocus] = useState(Camera.Constants.AutoFocus.off);
+
+  const onToggleAutoFocus = () => {
+    toggleAutoFocus((current) =>
+      current === Camera.Constants.AutoFocus.on
+        ? Camera.Constants.AutoFocus.off
+        : Camera.Constants.AutoFocus.on
+    );
+  };
   const handleBarCodeScanned = ({ type, data }) => {
     // Handle scanned QR code data here
     setScanned(true);
@@ -21,7 +30,7 @@ export default function App() {
   }
 
   function handleZoomIn() {
-   if (zoom < 1 ) {
+   if (zoom < 0.9 ) {
     setZoom(zoom + 0.1   );
    } 
   }
@@ -30,13 +39,13 @@ export default function App() {
     if ( zoom > 0.2)  {setZoom(zoom - 0.1);}
   }
   function handleToggleFlash() {
-    setFlashMode(current => (current === Camera.Constants.FlashMode.off ? Camera.Constants.FlashMode.on : Camera.Constants.FlashMode.off));
+    setFlashMode(current => (current === Camera.Constants.FlashMode.off ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off));
   }
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Text style={{ textAlign: 'center' , marginVertical:20, fontSize:16 }}>We need your permission to show the camera</Text>
         <Button onPress={requestPermission} title="grant permission" />
       </View>
     );
@@ -45,7 +54,7 @@ export default function App() {
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
-
+   
   return (
     <View style={styles.container}>
        <Camera
@@ -54,13 +63,17 @@ export default function App() {
         barCodeScannerSettings={{
           barCodeTypes: [BarCodeScanner.Constants.BarCodeType.datamatrix],
         }}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        
+        onBarCodeScanned={ handleBarCodeScanned}
         zoom={zoom}
         flashMode={flashMode}
+        // autoFocus={Camera.Constants.AutoFocus.on}    
+          
+   
         
       />
 
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {/* {scanned && <Button title={'Tap to Scan Again'} style={styles.tabButton} onPress={() => setScanned(false)} />} */}
       <View style={styles.controlsContainer}>
         <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
          <MaterialIcons name="add" size={40} color="black" />
@@ -70,9 +83,12 @@ export default function App() {
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.controlButton} onPress={handleToggleFlash}>
-          <Text style={styles.controlText}>
-            {flashMode === Camera.Constants.FlashMode.off ? 'Flash On' : 'Flash Off'}
-          </Text>
+          {/* <Text style={styles.controlText}> */}
+            {flashMode === Camera.Constants.FlashMode.off ? <FoundIcon name='flashlight-outline' size={30} color="black" /> : <FoundIcon name='flashlight' size={30} color="black" /> }
+          {/* </Text> */}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.controlAutoFocus} onPress={onToggleAutoFocus}>
+           {autoFocus === Camera.Constants.AutoFocus.off ? <FoundIcon name='ios-camera-reverse-outline' size={30} color="black" /> : <FoundIcon name='ios-camera-reverse' size={30} color="black" /> }
         </TouchableOpacity>
 
     </View>
@@ -106,5 +122,41 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+  },
+  controlButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'lightgrey',
+    borderRadius: 50,
+    padding: 10,
+    margin: 5,
+  },
+  controlsContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    flexDirection: 'row',
+  },
+  zoomButton: {
+    backgroundColor: 'lightgrey',
+    borderRadius: 50,
+    padding: 10,
+    margin: 5,
+  },
+  controlText: {
+    fontSize: 30,
+  },
+  tabButton: {
+  
+  },
+  controlAutoFocus: {
+    position: 'absolute',
+    bottom: 20,
+    right: 80,
+    backgroundColor: 'lightgrey',
+    borderRadius: 50,
+    padding: 10,
+    margin: 5,
   },
 });
