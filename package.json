@@ -7,6 +7,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.1.7",
     "expo": "~48.0.18",
     "expo-barcode-scanner": "~12.3.2",
